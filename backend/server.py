@@ -34,15 +34,23 @@ if not firebase_admin._apps:
     
     # Check if we have the required environment variables
     if firebase_config["project_id"] and firebase_config["private_key"] and firebase_config["client_email"]:
+        print("Using Firebase environment variables configuration")
         cred = credentials.Certificate(firebase_config)
         firebase_admin.initialize_app(cred)
     else:
         # Fallback to JSON file for local development
         json_file_path = ROOT_DIR / 'firebase_admin.json'
         if json_file_path.exists():
+            print("Using Firebase JSON file configuration")
             cred = credentials.Certificate(str(json_file_path))
             firebase_admin.initialize_app(cred)
         else:
+            print("ERROR: Firebase credentials not found!")
+            print("Environment variables missing:")
+            print(f"  FIREBASE_PROJECT_ID: {'✓' if firebase_config['project_id'] else '✗'}")
+            print(f"  FIREBASE_PRIVATE_KEY: {'✓' if firebase_config['private_key'] else '✗'}")
+            print(f"  FIREBASE_CLIENT_EMAIL: {'✓' if firebase_config['client_email'] else '✗'}")
+            print(f"  firebase_admin.json file: {'✓' if json_file_path.exists() else '✗'}")
             raise Exception("Firebase credentials not found. Please set environment variables or provide firebase_admin.json file.")
 
 db = firestore.client()
