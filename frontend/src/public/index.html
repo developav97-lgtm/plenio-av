@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#000000" />
+        <meta name="description" content="A product of emergent.sh" />
+        <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+        <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+        <title>Emergent | Fullstack App</title>
+        <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
+        <!--
+        These two scripts have been added for the testing, please do not edit or remove them
+        -->
+        <script src="https://unpkg.com/rrweb@latest/dist/rrweb.min.js"></script>
+        <script src="https://d2adkz2s9zrlge.cloudfront.net/rrweb-recorder-20250919-1.js"></script>
+        <!--
+        These two scripts have been added for the Visual Edits, please do not edit or remove them
+        -->
+        <script>
+            // Only load visual edit scripts when inside an iframe and visual edits are enabled
+            if (window.self !== window.top && '%REACT_APP_ENABLE_VISUAL_EDITS%' === 'true') {
+                // Load debug monitor script
+                var debugScript = document.createElement('script');
+                debugScript.src = 'https://assets.emergent.sh/scripts/debug-monitor.js';
+                document.head.appendChild(debugScript);
+
+                // Configure Tailwind
+                window.tailwind = window.tailwind || {};
+                tailwind.config = {
+                    corePlugins: { preflight: false },
+                };
+
+                // Load Tailwind CDN
+                var tailwindScript = document.createElement('script');
+                tailwindScript.src = 'https://cdn.tailwindcss.com';
+                document.head.appendChild(tailwindScript);
+            }
+        </script>
+        <style>
+            /* Tailwind CSS reset for visual edits */
+            .visual-edit-mode * {
+                all: unset;
+                display: revert;
+                box-sizing: border-box;
+            }
+            .visual-edit-mode *::before,
+            .visual-edit-mode *::after {
+                all: unset;
+                display: revert;
+                box-sizing: border-box;
+            }
+        </style>
+    </head>
+    <body>
+        <noscript>You need to enable JavaScript to run this app.</noscript>
+        <div id="root"></div>
+        <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+        <script>
+            // Health check endpoint for monitoring
+            if ('%ENABLE_HEALTH_CHECK%' === 'true') {
+                // Simple health check implementation
+                window.healthCheck = {
+                    status: 'ok',
+                    timestamp: new Date().toISOString(),
+                    version: '1.0.0',
+                };
+
+                // Expose health check endpoint
+                if (window.location.pathname === '/health') {
+                    document.body.innerHTML = '<pre>' + JSON.stringify(window.healthCheck, null, 2) + '</pre>';
+                }
+            }
+        </script>
+        <script>
+            // Visual edits initialization
+            if (window.self !== window.top && '%REACT_APP_ENABLE_VISUAL_EDITS%' === 'true') {
+                document.body.classList.add('visual-edit-mode');
+
+                // Initialize visual edits when React app is ready
+                window.addEventListener('load', function () {
+                    setTimeout(function () {
+                        if (window.initializeVisualEdits) {
+                            window.initializeVisualEdits();
+                        }
+                    }, 1000);
+                });
+            }
+        </script>
+        <script>
+            // Recording functionality for testing
+            if (typeof rrweb !== 'undefined' && window.startRecording) {
+                // Initialize recording if available
+                window.addEventListener('load', function () {
+                    if (window.startRecording) {
+                        window.startRecording();
+                    }
+                });
+            }
+        </script>
+        <script>
+            // Error boundary for production
+            window.addEventListener('error', function (event) {
+                console.error('Global error caught:', event.error);
+                // You can send this to your error reporting service
+            });
+
+            window.addEventListener('unhandledrejection', function (event) {
+                console.error('Unhandled promise rejection:', event.reason);
+                // You can send this to your error reporting service
+            });
+        </script>
+        <script>
+            // Performance monitoring
+            if ('performance' in window) {
+                window.addEventListener('load', function () {
+                    setTimeout(function () {
+                        const perfData = performance.getEntriesByType('navigation')[0];
+                        if (perfData) {
+                            console.log('Page load time:', perfData.loadEventEnd - perfData.fetchStart, 'ms');
+                        }
+                    }, 0);
+                });
+            }
+        </script>
+        <script>
+            // Service worker registration (optional)
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function () {
+                    navigator.serviceWorker
+                        .register('/service-worker.js')
+                        .then(function (registration) {
+                            console.log('SW registered: ', registration);
+                        })
+                        .catch(function (registrationError) {
+                            console.log('SW registration failed: ', registrationError);
+                        });
+                });
+            }
+        </script>
+        <script>
+            // Theme detection and application
+            (function () {
+                const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                }
+            })();
+        </script>
+        <script>
+            // Accessibility enhancements
+            document.addEventListener('DOMContentLoaded', function () {
+                // Add skip link for keyboard navigation
+                const skipLink = document.createElement('a');
+                skipLink.href = '#main-content';
+                skipLink.textContent = 'Skip to main content';
+                skipLink.className = 'sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 bg-blue-600 text-white p-2 z-50';
+                document.body.insertBefore(skipLink, document.body.firstChild);
+
+                // Announce page changes to screen readers
+                const announcer = document.createElement('div');
+                announcer.setAttribute('aria-live', 'polite');
+                announcer.setAttribute('aria-atomic', 'true');
+                announcer.className = 'sr-only';
+                announcer.id = 'page-announcer';
+                document.body.appendChild(announcer);
+            });
+        </script>
+        <script>
+            // Progressive Web App features
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', function (e) {
+                e.preventDefault();
+                deferredPrompt = e;
+                // Show install button or banner
+                console.log('PWA install prompt available');
+            });
+
+            window.addEventListener('appinstalled', function (evt) {
+                console.log('PWA was installed');
+            });
+        </script>
+    </body>
+</html>
